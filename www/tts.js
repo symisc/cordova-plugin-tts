@@ -36,8 +36,8 @@ exports.stop = function(onfulfilled, onrejected) {
 };
 
 exports.getLang = function(onfulfilled, onrejected) {
-    cordova.exec(function () {
-        onfulfilled();
+    cordova.exec(function (res) {
+        onfulfilled(res);
     }, function(reason) {
         onrejected(reason);
      }, 'TTS', 'getLang', []);
