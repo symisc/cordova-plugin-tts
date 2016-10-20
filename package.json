@@ -3,7 +3,7 @@
   "version": "0.4",
   "description": "Cordova Text-to-Speech Plugin",
   "cordova": {
-    "id": "cordova-plugin-tts",
+    "id": "cordova-plugin-symisc-tts",
     "platforms": [
       "ios",
       "wp8",
