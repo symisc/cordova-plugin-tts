@@ -111,7 +111,7 @@ public class TTS extends CordovaPlugin implements OnInitListener {
               jb.put("code", locales[i].getLanguage());
               json.put(jb);
           }
-          callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, json));
+          callbackContext.success(json);
     }
     
     private void speak(JSONArray args, CallbackContext callbackContext)
