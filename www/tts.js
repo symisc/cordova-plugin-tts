@@ -34,3 +34,11 @@ exports.stop = function(onfulfilled, onrejected) {
         onrejected(reason);
      }, 'TTS', 'stop', []);
 };
+
+exports.getLang = function(onfulfilled, onrejected) {
+    cordova.exec(function () {
+        onfulfilled();
+    }, function(reason) {
+        onrejected(reason);
+     }, 'TTS', 'getLang', []);
+};
