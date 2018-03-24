@@ -9,6 +9,7 @@
 */
 
 #import <Cordova/CDV.h>
+#import <Cordova/CDVAvailability.h>
 #import "CDVTTS.h"
 
 @implementation CDVTTS
@@ -64,12 +65,33 @@
     AVSpeechUtterance* utterance = [[AVSpeechUtterance new] initWithString:text];
     utterance.voice = [AVSpeechSynthesisVoice voiceWithLanguage:locale];
     // Rate expression adjusted manually for a closer match to other platform.
-    utterance.rate = (AVSpeechUtteranceMinimumSpeechRate * 1.5 + AVSpeechUtteranceDefaultSpeechRate) / 2.5 * rate * rate;
+    utterance.rate = (AVSpeechUtteranceMinimumSpeechRate * 1.5 + AVSpeechUtteranceDefaultSpeechRate) / 2.25 * rate * rate;
+    // workaround for https://github.com/vilic/cordova-plugin-tts/issues/21
+    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 9.0) {
+       utterance.rate = utterance.rate * 2;
+       // see http://stackoverflow.com/questions/26097725/avspeechuterrance-speed-in-ios-8
+    }
     utterance.pitchMultiplier = 1.2;
     [synthesizer speakUtterance:utterance];
 }
 
 - (void)stop:(CDVInvokedUrlCommand*)command {
+    [synthesizer pauseSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     [synthesizer stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
+}
+
+- (void)checkLanguage:(CDVInvokedUrlCommand *)command {
+    NSArray *voices = [AVSpeechSynthesisVoice speechVoices];
+    NSString *languages = @"";
+    for (id voiceName in voices) {
+        languages = [languages stringByAppendingString:@","];
+        languages = [languages stringByAppendingString:[voiceName valueForKey:@"language"]];
+    }
+    if ([languages hasPrefix:@","] && [languages length] > 1) {
+        languages = [languages substringFromIndex:1];
+    }
+
+    CDVPluginResult *result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:languages];
+    [self.commandDelegate sendPluginResult:result callbackId:command.callbackId];
 }
 @end
